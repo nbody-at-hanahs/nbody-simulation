@@ -4,7 +4,8 @@
   "description": "N-Body Simulation for HAS",
   "main": "nbody-forces.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "parcel index.html",
+    "build": "parcel build index.html"
   },
   "repository": {
     "type": "git",
@@ -22,5 +23,11 @@
   "bugs": {
     "url": "https://github.com/nbody-at-hanahs/nbody-simulation/issues"
   },
-  "homepage": "https://github.com/nbody-at-hanahs/nbody-simulation#readme"
+  "homepage": "https://github.com/nbody-at-hanahs/nbody-simulation#readme",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.3"
+  },
+  "dependencies": {
+    "three": "^0.107.0"
+  }
 }

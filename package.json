@@ -1,16 +1,31 @@
 {
-  "name": "nbody",
+  "name": "nbody-simulation",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "N-Body Simulation for HAS",
+  "main": "nbody-forces.js",
   "scripts": {
-    "dev": "parcel index.html",
-    "build": "parcel build index.html"
+    "dev": "./node_modules/.bin/parcel index.html",
+    "build": "./node_modules/.bin/parcel build index.html"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nbody-at-hanahs/nbody-simulation.git"
+  },
+  "keywords": [
+    "nbody-simulation",
+    "hana-academy-seoul",
+    "javascript",
+    "threejs",
+    "physics"
+  ],
+  "author": "nbody-at-hanahs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nbody-at-hanahs/nbody-simulation/issues"
+  },
+  "homepage": "https://github.com/nbody-at-hanahs/nbody-simulation#readme",
   "devDependencies": {
+    "parcel": "^1.12.3",
     "parcel-bundler": "^1.12.3"
   },
   "dependencies": {

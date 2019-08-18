@@ -1,0 +1,26 @@
+{
+  "name": "nbody-simulation",
+  "version": "1.0.0",
+  "description": "N-Body Simulation for HAS",
+  "main": "nbody-forces.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nbody-at-hanahs/nbody-simulation.git"
+  },
+  "keywords": [
+    "nbody-simulation",
+    "hana-academy-seoul",
+    "javascript",
+    "threejs",
+    "physics"
+  ],
+  "author": "nbody-at-hanahs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nbody-at-hanahs/nbody-simulation/issues"
+  },
+  "homepage": "https://github.com/nbody-at-hanahs/nbody-simulation#readme"
+}

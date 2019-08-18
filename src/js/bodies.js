@@ -6,7 +6,7 @@ const material = new THREE.MeshPhysicalMaterial({
   color: 0x00ff00, reflectivity: 0.5, roughness: 0.5, emissive: 0x0,
 })
 
-export function generateBodies(n: number, size: number, boundX: number, boundY: number, boundZ: number) {
+export function generateBodies(n, size, boundX, boundY, boundZ) {
   let geometry = new THREE.BufferGeometry
   // let material = new THREE.PointsMaterial({ size: size, vertexColors: THREE.VertexColors })
   let positions = new Float32Array(n * 3)

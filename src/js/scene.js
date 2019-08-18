@@ -6,12 +6,12 @@ let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHei
 let renderer = new THREE.WebGLRenderer();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio( window.devicePixelRatio );
+renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
-var light = new THREE.PointLight( 0xffffff, 4, 100 );
-light.position.set( 10, 10, 50 );
-scene.add( light );
+var light = new THREE.PointLight(0xffffff, 4, 100);
+light.position.set(10, 10, 50);
+scene.add(light);
 
 let geometry = new THREE.SphereGeometry(1, 20, 20);
 let material = new THREE.MeshStandardMaterial({

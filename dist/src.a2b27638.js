@@ -33974,12 +33974,15 @@ var material = new THREE.MeshPhysicalMaterial({
   emissive: 0x0
 });
 
-function generateBodies(n, size, boundX, boundY, boundZ) {
+function generateBodies(n, size, mass, boundX, boundY, boundZ) {
   var geometry = new THREE.BufferGeometry(); // let material = new THREE.PointsMaterial({ size: size, vertexColors: THREE.VertexColors })
 
   var positions = new Float32Array(n * 3);
   var colors = new Float32Array(n * 3);
+  var velocities = new Float32Array(n * 3);
+  var accelerations = new Float32Array(n * 3);
   var sizes = new Float32Array(n);
+  var masses = new Float32Array(n);
   var texture = new THREE.TextureLoader().load(_ball.default);
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
@@ -33998,7 +34001,6 @@ function generateBodies(n, size, boundX, boundY, boundZ) {
     vertexShader: document.getElementById('vertexshader').textContent,
     fragmentShader: document.getElementById('fragmentshader').textContent
   });
-  console.log(texture);
 
   for (var i = 0; i < n; i++) {
     positions[3 * i] = (Math.random() - 0.5) * boundX;
@@ -34008,20 +34010,135 @@ function generateBodies(n, size, boundX, boundY, boundZ) {
     colors[3 * i + 1] = 0x1;
     colors[3 * i + 2] = 0x00;
     sizes[i] = size;
+    masses[i] = mass;
+    velocities[3 * i], velocities[3 * i + 1], velocities[3 * i + 2] = 0, 0, 0;
+    accelerations[3 * i], accelerations[3 * i + 1], accelerations[3 * i + 2] = 0, 0, 0;
   }
 
+  geometry.dynamic = true;
   geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.addAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+  geometry.addAttribute('acceleration', new THREE.BufferAttribute(accelerations, 3));
+  geometry.addAttribute('mass', new THREE.BufferAttribute(masses, 1));
   geometry.addAttribute('ca', new THREE.BufferAttribute(colors, 3));
   geometry.addAttribute('size', new THREE.BufferAttribute(sizes, 1));
+  geometry.verticesNeedUpdate = true;
+  geometry.attributes.position.needsUpdate = true;
   geometry.computeBoundingBox();
   return new THREE.Points(geometry, material);
 }
-},{"three":"node_modules/three/build/three.module.js","../assets/ball.png":"src/assets/ball.png"}],"src/js/scene.js":[function(require,module,exports) {
+},{"three":"node_modules/three/build/three.module.js","../assets/ball.png":"src/assets/ball.png"}],"src/js/physics.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.verlet = verlet;
+
+function verlet(x0, y0, z0, vx0, vy0, vz0, ax0, ay0, az0, new_ax, new_ay, new_az, dt) {
+  // Velocity
+  var vx = vx0 + (ax0 + new_ax) / 2 * dt;
+  var vy = vy0 + (ay0 + new_ay) / 2 * dt;
+  var vz = vz0 + (az0 + new_az) / 2 * dt; // Position
+
+  var x = x0 + vx * dt + 0.5 * ax0 * dt * dt;
+  var y = y0 + vy * dt + 0.5 * ay0 * dt * dt;
+  var z = z0 + vz * dt + 0.5 * az0 * dt * dt;
+  return [x, y, z, vx, vy, vz];
+}
+},{}],"src/js/naive-nbody.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.naiveNBody = naiveNBody;
+
+var _physics = require("./physics");
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+var G = 6.67408 * Math.pow(10, -11);
+
+function naiveNBody(mass, position, velocity, acceleration) {
+  var newPos = [];
+  var newVel = [];
+  var newAcc = [];
+
+  for (var i = 0; i < mass.length; i++) {
+    var posX = position[3 * i];
+    var posY = position[3 * i + 1];
+    var posZ = position[3 * i + 2];
+    var accX = acceleration[3 * i];
+    var accY = acceleration[3 * i + 1];
+    var accZ = acceleration[3 * i + 2];
+    var newAccX = accX,
+        newAccY = accY,
+        newAccZ = accZ;
+
+    for (var j = 0; j < mass.length; j++) {
+      if (i != j) {
+        var posOppX = position[3 * j];
+        var posOppY = position[3 * j + 1];
+        var posOppZ = position[3 * j + 2];
+
+        var _gravitation = gravitation(posX, posY, posZ, posOppX, posOppY, posOppZ, mass[j]),
+            _gravitation2 = _slicedToArray(_gravitation, 3),
+            newAccLocalX = _gravitation2[0],
+            newAccLocalY = _gravitation2[1],
+            newAccLocalZ = _gravitation2[2];
+
+        newAccX += newAccLocalX;
+        newAccY += newAccLocalY;
+        newAccZ += newAccLocalZ;
+      }
+    } // console.log(newAccX, newAccY, newAccZ);
+
+
+    var next = (0, _physics.verlet)(posX, posY, posZ, velocity[3 * i], velocity[3 * i + 1], velocity[3 * i + 2], accX, accY, accZ, newAccX, newAccY, newAccZ, 0.1);
+    console.log(next);
+
+    for (var k = 0; k < next.length; k += 6) {
+      newPos.push(next[k]);
+      newPos.push(next[k + 1]);
+      newPos.push(next[k + 2]);
+      newVel.push(next[k + 3]);
+      newVel.push(next[k + 4]);
+      newVel.push(next[k + 5]);
+      newAcc.push(newAccX);
+      newAcc.push(newAccY);
+      newAcc.push(newAccZ);
+    }
+  }
+
+  return [newPos, newVel, newAcc];
+}
+
+function gravitation(pos1X, pos1Y, pos1Z, pos2X, pos2Y, pos2Z, massOpp) {
+  var dist = Math.sqrt(Math.pow(pos1X - pos2X, 2) + Math.pow(pos1Y - pos2Y, 2) + Math.pow(pos1Z - pos2Z, 2));
+  var acc = G * massOpp / Math.pow(dist, 2);
+  var accX = acc * Math.abs(pos1X - pos2X) / dist;
+  var accY = acc * Math.abs(pos1Y - pos2Y) / dist;
+  var accZ = acc * Math.abs(pos1Z - pos2Z) / dist;
+  var dirX = (pos2X - pos1X) / Math.abs(pos2X - pos1X);
+  var dirY = (pos2Y - pos1Y) / Math.abs(pos2Y - pos1Y);
+  var dirZ = (pos2Z - pos1Z) / Math.abs(pos2Z - pos1Z);
+  return [dirX * accX, dirY * accY, dirZ * accZ];
+}
+},{"./physics":"src/js/physics.js"}],"src/js/scene.js":[function(require,module,exports) {
 "use strict";
 
 var THREE = _interopRequireWildcard(require("three"));
 
 var _bodies = require("./bodies");
+
+var _naiveNbody = require("./naive-nbody");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
@@ -34041,11 +34158,13 @@ var material = new THREE.MeshStandardMaterial({
   roughness: 0.5,
   metalness: 0.5
 });
-var sphere = new THREE.Mesh(geometry, material);
-scene.add(sphere);
-var points = (0, _bodies.generateBodies)(1000, 1, 5, 5, 5);
+var sphere = new THREE.Mesh(geometry, material); // scene.add(sphere);
+
+var points = (0, _bodies.generateBodies)(20, 1, 10000000000, 5, 5, 5);
+points.geometry.attributes.position.needsUpdate = true;
 scene.add(points);
 camera.position.z = 5;
+points.geometry.attributes.position.needsUpdate = true;
 
 function animate() {
   requestAnimationFrame(animate);
@@ -34053,10 +34172,34 @@ function animate() {
   points.rotateX(-0.001);
   points.rotateY(0.001);
   points.rotateZ(0.001);
+  var newPos = (0, _naiveNbody.naiveNBody)(points.geometry.attributes.mass.array, points.geometry.attributes.position.array, points.geometry.attributes.velocity.array, points.geometry.attributes.acceleration.array)[0];
+
+  for (var i = 0; i < points.geometry.attributes.position.count; i++) {
+    points.geometry.attributes.position.array[i] = newPos[i];
+  } // console.log(points.geometry.attributes.position);
+
+
+  points.geometry.attributes.position.needsUpdate = true;
+  points.geometry.attributes.velocity.needsUpdate = true;
+  points.geometry.attributes.acceleration.needsUpdate = true;
+  points.geometry.attributes.mass.needsUpdate = true;
+  points.geometry.attributes.size.needsUpdate = true;
+
+  for (var _i = 0; _i < points.geometry.attributes.mass.count; _i++) {
+    for (var j = 0; j < points.geometry.attributes.mass.count; j++) {
+      if (_i != j) {
+        if (Math.pow(points.geometry.attributes.position[3 * _i] - points.geometry.attributes.position[3 * j], 2) + Math.pow(points.geometry.attributes.position[3 * _i + 1] - points.geometry.attributes.position[3 * j + 1], 2) + Math.pow(points.geometry.attributes.position[3 * _i + 2] - points.geometry.attributes.position[3 * j + 2], 2) < 100) {
+          points.geometry.attributes.size.array[_i] = 0;
+          points.geometry.attributes.mass.array[j] += points.geometry.attributes.mass.array[_i];
+          points.geometry.attributes.mass.array[_i] = 0;
+        }
+      }
+    }
+  }
 }
 
 animate();
-},{"three":"node_modules/three/build/three.module.js","./bodies":"src/js/bodies.js"}],"src/index.js":[function(require,module,exports) {
+},{"three":"node_modules/three/build/three.module.js","./bodies":"src/js/bodies.js","./naive-nbody":"src/js/naive-nbody.js"}],"src/index.js":[function(require,module,exports) {
 "use strict";
 
 require("./js/scene");
@@ -34088,7 +34231,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "3234" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "12905" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -4,8 +4,8 @@
   "description": "N-Body Simulation for HAS",
   "main": "nbody-forces.js",
   "scripts": {
-    "dev": "parcel index.html",
-    "build": "parcel build index.html"
+    "dev": "./node_modules/.bin/parcel index.html",
+    "build": "./node_modules/.bin/parcel build index.html"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/nbody-at-hanahs/nbody-simulation#readme",
   "devDependencies": {
+    "parcel": "^1.12.3",
     "parcel-bundler": "^1.12.3"
   },
   "dependencies": {

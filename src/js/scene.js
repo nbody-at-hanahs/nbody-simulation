@@ -24,7 +24,7 @@ let sphere = new THREE.Mesh(geometry, material);
 // scene.add(sphere);
 
 
-let points = generateBodies(200, 10, 1000000, 100, 100, 100)
+let points = generateBodies(300, 10, 1000000, 100, 100, 100)
 
 var axesHelper = new THREE.AxesHelper( 100 );
 scene.add( axesHelper );
@@ -56,7 +56,7 @@ function animate() {
     for (let j = 0; j < i; j++) {
       if (i != j) {
         let dist = (points.geometry.attributes.position.array[3 * i] - points.geometry.attributes.position.array[3 * j]) ** 2 + (points.geometry.attributes.position.array[3 * i + 1] - points.geometry.attributes.position.array[3 * j + 1]) ** 2 + (points.geometry.attributes.position.array[3 * i + 2] - points.geometry.attributes.position.array[3 * j + 2]) ** 2
-        if (dist < points.geometry.attributes.size.array[i] / 16 + points.geometry.attributes.size.array[j] / 16) { // Crash
+        if (dist < (points.geometry.attributes.size.array[i] + points.geometry.attributes.size.array[j]) / 12) { // Crash
           points.geometry.attributes.size.array[j] = (points.geometry.attributes.size.array[i] ** 3 + points.geometry.attributes.size.array[j] ** 3) ** 0.33333333
           points.geometry.attributes.size.array[i] = 0
           points.geometry.attributes.acceleration.array[j * 3] = 0

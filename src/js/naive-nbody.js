@@ -1,6 +1,6 @@
 import { verlet } from './physics';
 
-const G = 6.67408 * 10 ** -11
+const G = 6.67408 * 10 ** -4
 
 export function naiveNBody(mass, position, velocity, acceleration) {
   let newPos = []
@@ -40,7 +40,7 @@ export function naiveNBody(mass, position, velocity, acceleration) {
       velocity[3 * i], velocity[3 * i + 1], velocity[3 * i + 2],
       accX, accY, accZ,
       newAccX, newAccY, newAccZ,
-      0.1
+      0.0001
     )
 
     // for (let k = 0; k < next.length; k += 6) {

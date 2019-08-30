@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Created by https://www.gitignore.io/api/node
 # Edit at https://www.gitignore.io/?templates=node
 
@@ -94,7 +93,5 @@ typings/
 
 # End of https://www.gitignore.io/api/node
 dist/
-=======
-.cache
-node_modules
->>>>>>> a6ad3aa738bdd433cf6697ab29509868839bc7ee
+
+*.swp

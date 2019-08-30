@@ -35,13 +35,19 @@ export function generateBodies(n, size, mass, boundX, boundY, boundZ) {
     positions[3 * i + 1] = (Math.random() - 0.5) * boundY
     positions[3 * i + 2] = (Math.random() - 0.5) * boundZ
 
-    colors[3 * i] = 0x00
-    colors[3 * i + 1] = 0x1
-    colors[3 * i + 2] = 0x00
+    colors[3 * i] = 1
+    colors[3 * i + 1] = 1
+    colors[3 * i + 2] = 0
 
     sizes[i] = size
     masses[i] = mass
     velocities[3 * i], velocities[3 * i + 1], velocities[3 * i + 2] = 0, 0, 0
+
+    const velocityScale = 0.3
+    velocities[3 * i] = (Math.random() - 0.5) * velocityScale
+    velocities[3 * i + 1] = (Math.random() - 0.5) * velocityScale
+    velocities[3 * i + 2] = (Math.random() - 0.5) * velocityScale
+
     accelerations[3 * i], accelerations[3 * i + 1], accelerations[3 * i + 2] = 0, 0, 0
   }
 
